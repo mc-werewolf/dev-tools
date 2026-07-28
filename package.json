@@ -1,0 +1,48 @@
+{
+    "name": "werewolf-dev-tools",
+    "version": "1.0.0",
+    "description": "Development-only tools for Werewolf BDS testing.",
+    "main": "index.js",
+    "type": "module",
+    "packageManager": "pnpm@10.31.0",
+    "scripts": {
+        "init": "kairo init",
+        "sync": "kairo sync",
+        "clean": "kairo clean",
+        "typecheck": "kairo typecheck",
+        "build": "kairo build",
+        "build:ci": "kairo build-ci",
+        "deploy": "kairo deploy"
+    },
+    "kairoBuild": {
+        "platform": "neutral"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:mc-werewolf/dev-tools.git"
+    },
+    "keywords": [
+        "minecraft",
+        "bds",
+        "werewolf",
+        "gametest",
+        "dev-tools"
+    ],
+    "author": "shizuku86",
+    "license": "ISC",
+    "devDependencies": {
+        "@kairo-js/build-tools": "1.0.0-beta.4",
+        "@kairo-js/properties": "1.2.1",
+        "@kairo-js/router": "1.0.0-beta.2",
+        "@minecraft/common": "^1.2.0",
+        "@minecraft/server": "^2.8.0",
+        "@minecraft/server-gametest": "1.0.0-beta.1.21.60-preview.24",
+        "@minecraft/server-ui": "^2.0.0",
+        "@types/node": "^24.12.0",
+        "esbuild": "^0.27.3",
+        "fs-extra": "^11.3.4",
+        "prettier": "3.6.2",
+        "rimraf": "^6.1.3",
+        "typescript": "^5.9.3"
+    }
+}

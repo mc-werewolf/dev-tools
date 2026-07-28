@@ -1,0 +1,14 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    uses: kairo-js/github-workflows/.github/workflows/minecraft-pack-release.yml@main
+    permissions:
+      contents: write
+    with:
+      artifact-name: werewolf-dev-simulated-player

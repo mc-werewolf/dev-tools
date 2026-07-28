@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "./BP/scripts",
+        "module": "ESNext",
+        "target": "ES2022",
+        "moduleResolution": "bundler",
+        "types": ["node", "@minecraft/server", "@minecraft/server-gametest", "@minecraft/server-ui"],
+        "sourceMap": false,
+        "declaration": false,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": false,
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "noUncheckedSideEffectImports": true,
+        "moduleDetection": "force",
+        "skipLibCheck": true
+    },
+    "include": ["src/**/*"]
+}

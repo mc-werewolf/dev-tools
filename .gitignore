@@ -1,0 +1,16 @@
+node_modules/
+package-lock.json
+BP/scripts/
+BP/manifest.json
+RP/manifest.json
+BP/pack_icon.png
+RP/pack_icon.png
+RP/textures/*/pack_icon.png
+.build/.manifest-version.json
+.build/.uuid.json
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.zip
+*.mcaddon
+*.mcpack
