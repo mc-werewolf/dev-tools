@@ -61,6 +61,8 @@ const GAMETEST_FLOOR_MIN = { x: -8, y: -1, z: -24 } as const;
 const GAMETEST_FLOOR_MAX = { x: 8, y: -1, z: 24 } as const;
 const GAMETEST_CLEAR_HEIGHT = 16;
 const GAMETEST_FLOOR_BLOCK = "minecraft:glass";
+const GAMETEST_MARKER_POSITION = { x: -6, y: 0, z: -21 } as const;
+const GAMETEST_MARKER_BLOCK = "minecraft:light_blue_stained_glass";
 const DISCONNECT_WAIT_MAX_TICKS = 100;
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
@@ -448,6 +450,7 @@ function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGam
     try {
         clearGameTestOrigin(player);
         createGameTestFloor(player);
+        createGameTestMarker(player);
         player.runCommand(
             `execute positioned ${GAMETEST_ORIGIN.x} ${GAMETEST_ORIGIN.y} ${GAMETEST_ORIGIN.z} run gametest run WerewolfDevSim:${testName}`,
         );
@@ -468,6 +471,12 @@ function clearGameTestOrigin(player: Player): void {
 function createGameTestFloor(player: Player): void {
     player.runCommand(
         `fill ${GAMETEST_FLOOR_MIN.x} ${GAMETEST_FLOOR_MIN.y} ${GAMETEST_FLOOR_MIN.z} ${GAMETEST_FLOOR_MAX.x} ${GAMETEST_FLOOR_MAX.y} ${GAMETEST_FLOOR_MAX.z} ${GAMETEST_FLOOR_BLOCK} replace`,
+    );
+}
+
+function createGameTestMarker(player: Player): void {
+    player.runCommand(
+        `setblock ${GAMETEST_MARKER_POSITION.x} ${GAMETEST_MARKER_POSITION.y} ${GAMETEST_MARKER_POSITION.z} ${GAMETEST_MARKER_BLOCK}`,
     );
 }
 
