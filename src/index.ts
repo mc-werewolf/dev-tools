@@ -56,7 +56,9 @@ const SESSION_TICKS = 20 * 60 * 20;
 const DEFAULT_BOT_COUNT = 4;
 const MAX_BOT_COUNT = 20;
 const BOT_NAME_PREFIX = "WerewolfDevBot";
-const GAMETEST_Y_OFFSET = 30;
+const GAMETEST_ORIGIN = { x: 0, y: 0, z: 0 } as const;
+const GAMETEST_CLEAR_RADIUS = 16;
+const GAMETEST_CLEAR_HEIGHT = 16;
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
 
@@ -390,13 +392,30 @@ function formatSessionBody(session: SessionSummary | undefined): string {
 
 function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGameWithBots"): void {
     try {
-        player.runCommand(`execute positioned ~ ~${GAMETEST_Y_OFFSET} ~ run gametest run WerewolfDevSim:${testName}`);
+        clearGameTestOrigin(player);
+        player.runCommand(
+            `execute positioned ${GAMETEST_ORIGIN.x} ${GAMETEST_ORIGIN.y} ${GAMETEST_ORIGIN.z} run gametest run WerewolfDevSim:${testName}`,
+        );
         player.sendMessage(
-            `[werewolf-dev-tools] Starting ${testName} ${GAMETEST_Y_OFFSET} blocks above you with ${configuredBotCount} simulated players.`,
+            `[werewolf-dev-tools] Starting ${testName} at ${formatGameTestOrigin()} with ${configuredBotCount} simulated players.`,
         );
     } catch (err) {
         player.sendMessage(`[werewolf-dev-tools] Failed to start GameTest: ${err instanceof Error ? err.message : String(err)}`);
     }
+}
+
+function clearGameTestOrigin(player: Player): void {
+    const minX = GAMETEST_ORIGIN.x - GAMETEST_CLEAR_RADIUS;
+    const minY = GAMETEST_ORIGIN.y;
+    const minZ = GAMETEST_ORIGIN.z - GAMETEST_CLEAR_RADIUS;
+    const maxX = GAMETEST_ORIGIN.x + GAMETEST_CLEAR_RADIUS;
+    const maxY = GAMETEST_ORIGIN.y + GAMETEST_CLEAR_HEIGHT;
+    const maxZ = GAMETEST_ORIGIN.z + GAMETEST_CLEAR_RADIUS;
+    player.runCommand(`fill ${minX} ${minY} ${minZ} ${maxX} ${maxY} ${maxZ} air replace`);
+}
+
+function formatGameTestOrigin(): string {
+    return `${GAMETEST_ORIGIN.x}, ${GAMETEST_ORIGIN.y}, ${GAMETEST_ORIGIN.z}`;
 }
 
 function broadcast(message: string): void {
