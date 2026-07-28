@@ -56,6 +56,7 @@ const SESSION_TICKS = 20 * 60 * 20;
 const DEFAULT_BOT_COUNT = 4;
 const MAX_BOT_COUNT = 20;
 const BOT_NAME_PREFIX = "WerewolfDevBot";
+const GAMETEST_Y_OFFSET = 30;
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
 
@@ -389,8 +390,10 @@ function formatSessionBody(session: SessionSummary | undefined): string {
 
 function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGameWithBots"): void {
     try {
-        player.runCommand(`gametest run WerewolfDevSim:${testName}`);
-        player.sendMessage(`[werewolf-dev-tools] Starting ${testName} with ${configuredBotCount} simulated players.`);
+        player.runCommand(`execute positioned ~ ~${GAMETEST_Y_OFFSET} ~ run gametest run WerewolfDevSim:${testName}`);
+        player.sendMessage(
+            `[werewolf-dev-tools] Starting ${testName} ${GAMETEST_Y_OFFSET} blocks above you with ${configuredBotCount} simulated players.`,
+        );
     } catch (err) {
         player.sendMessage(`[werewolf-dev-tools] Failed to start GameTest: ${err instanceof Error ? err.message : String(err)}`);
     }
