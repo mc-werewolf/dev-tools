@@ -66,6 +66,7 @@ const GAMETEST_MARKER_BLOCK = "minecraft:light_blue_stained_glass";
 const GAMETEST_MARKER_DELAY_TICKS = 10;
 const DISCONNECT_WAIT_MAX_TICKS = 100;
 const DISCONNECT_SETTLE_TICKS = 20;
+const SPAWN_VISIBILITY_WAIT_MAX_TICKS = 100;
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
 
@@ -127,7 +128,8 @@ gameTest
         try {
             const players = await startSession(test, configuredBotCount);
 
-            const playerIds = [...getHumanPlayers(), ...players].map((player) => player.id);
+            const playerIds = collectVisibleStartPlayerIds([...getHumanPlayers(), ...players]);
+            await waitForPlayerIdsToBeVisible(playerIds, spawnRequestSerial);
             const result = await tryGameManagerRequest<GameStateLike>("werewolf:devStartGame", { playerIds });
             if (!result || isCanceledResult(result) || result.status !== "running") {
                 broadcast("GameManager dev APIs were unavailable. Bots are spawned; start the game manually.");
@@ -303,6 +305,20 @@ async function waitForDisconnectSettle(requestSerial: number): Promise<void> {
     }
 }
 
+async function waitForPlayerIdsToBeVisible(playerIds: readonly string[], requestSerial: number): Promise<void> {
+    let missingIds = [...new Set(playerIds)];
+    for (let tick = 0; tick < SPAWN_VISIBILITY_WAIT_MAX_TICKS; tick += 1) {
+        if (requestSerial !== spawnRequestSerial) {
+            throw new Error("A newer simulated player spawn request superseded this one.");
+        }
+        const visibleIds = new Set(world.getPlayers().map((player) => player.id));
+        missingIds = playerIds.filter((playerId) => !visibleIds.has(playerId));
+        if (missingIds.length === 0) return;
+        await system.waitTicks(1);
+    }
+    throw new Error(`Timed out waiting for simulated players to become visible: ${missingIds.join(", ")}`);
+}
+
 function addSimulatedPlayers(args?: { readonly count?: unknown }): SessionSummary | undefined {
     if (!activeSession) {
         throw new Error("No active GameTest session. Spawn a new session first.");
@@ -351,6 +367,15 @@ function createBotName(): string {
         nextBotNumber += 1;
         if (!usedNames.has(name)) return name;
     }
+}
+
+function collectVisibleStartPlayerIds(players: readonly (Player | SimulatedPlayer | undefined)[]): string[] {
+    return players.map((player) => {
+        if (!player || typeof player.id !== "string" || player.id.length === 0) {
+            throw new Error("A simulated player was not spawned correctly.");
+        }
+        return player.id;
+    });
 }
 
 function listSession(): SessionSummary | undefined {
