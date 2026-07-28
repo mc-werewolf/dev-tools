@@ -59,6 +59,7 @@ const BOT_NAME_PREFIX = "WerewolfDevBot";
 const GAMETEST_ORIGIN = { x: 0, y: 0, z: 0 } as const;
 const GAMETEST_CLEAR_RADIUS = 16;
 const GAMETEST_CLEAR_HEIGHT = 16;
+const GAMETEST_FLOOR_BLOCK = "minecraft:glass";
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
 
@@ -393,6 +394,7 @@ function formatSessionBody(session: SessionSummary | undefined): string {
 function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGameWithBots"): void {
     try {
         clearGameTestOrigin(player);
+        createGameTestFloor(player);
         player.runCommand(
             `execute positioned ${GAMETEST_ORIGIN.x} ${GAMETEST_ORIGIN.y} ${GAMETEST_ORIGIN.z} run gametest run WerewolfDevSim:${testName}`,
         );
@@ -412,6 +414,15 @@ function clearGameTestOrigin(player: Player): void {
     const maxY = GAMETEST_ORIGIN.y + GAMETEST_CLEAR_HEIGHT;
     const maxZ = GAMETEST_ORIGIN.z + GAMETEST_CLEAR_RADIUS;
     player.runCommand(`fill ${minX} ${minY} ${minZ} ${maxX} ${maxY} ${maxZ} air replace`);
+}
+
+function createGameTestFloor(player: Player): void {
+    const minX = GAMETEST_ORIGIN.x - GAMETEST_CLEAR_RADIUS;
+    const y = GAMETEST_ORIGIN.y - 1;
+    const minZ = GAMETEST_ORIGIN.z - GAMETEST_CLEAR_RADIUS;
+    const maxX = GAMETEST_ORIGIN.x + GAMETEST_CLEAR_RADIUS;
+    const maxZ = GAMETEST_ORIGIN.z + GAMETEST_CLEAR_RADIUS;
+    player.runCommand(`fill ${minX} ${y} ${minZ} ${maxX} ${y} ${maxZ} ${GAMETEST_FLOOR_BLOCK} replace`);
 }
 
 function formatGameTestOrigin(): string {
