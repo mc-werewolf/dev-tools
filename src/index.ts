@@ -54,10 +54,11 @@ type GameStateLike = {
 
 const SESSION_TICKS = 20 * 60 * 20;
 const DEFAULT_BOT_COUNT = 4;
-const MAX_BOT_COUNT = 20;
+const MAX_BOT_COUNT = 100;
 const BOT_NAME_PREFIX = "WerewolfDevBot";
-const GAMETEST_ORIGIN = { x: 0, y: 0, z: 0 } as const;
-const GAMETEST_CLEAR_RADIUS = 16;
+const GAMETEST_ORIGIN = { x: -5, y: 0, z: -24 } as const;
+const GAMETEST_FLOOR_MIN = { x: -8, y: -1, z: -32 } as const;
+const GAMETEST_FLOOR_MAX = { x: 8, y: -1, z: 32 } as const;
 const GAMETEST_CLEAR_HEIGHT = 16;
 const GAMETEST_FLOOR_BLOCK = "minecraft:glass";
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
@@ -210,10 +211,16 @@ async function openAddBotsForm(player: Player): Promise<void> {
         player.sendMessage("[werewolf-dev-tools] No active GameTest session. Spawn a new session first.");
         return;
     }
+    activeSession.players = activeSession.players.filter((sessionPlayer) => sessionPlayer.isValid);
+    const remainingCount = MAX_BOT_COUNT - activeSession.players.length;
+    if (remainingCount <= 0) {
+        player.sendMessage(`[werewolf-dev-tools] Maximum simulated player count is ${MAX_BOT_COUNT}.`);
+        return;
+    }
 
     const form = new ModalFormData()
         .title("Add simulated players")
-        .slider("Bot count", 1, MAX_BOT_COUNT, {
+        .slider("Bot count", 1, remainingCount, {
             valueStep: 1,
             defaultValue: 1,
         })
@@ -252,7 +259,15 @@ function addSimulatedPlayers(args?: { readonly count?: unknown }): SessionSummar
         throw new Error("No active GameTest session. Spawn a new session first.");
     }
     activeSession.players = activeSession.players.filter((player) => player.isValid);
-    const players = spawnPlayers(activeSession.test, readCount(args?.count, 1), activeSession.players.length);
+    const remainingCount = MAX_BOT_COUNT - activeSession.players.length;
+    if (remainingCount <= 0) {
+        throw new Error(`Maximum simulated player count is ${MAX_BOT_COUNT}.`);
+    }
+    const players = spawnPlayers(
+        activeSession.test,
+        Math.min(readCount(args?.count, 1), remainingCount),
+        activeSession.players.length,
+    );
     activeSession.players.push(...players);
     return listSession();
 }
@@ -407,22 +422,15 @@ function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGam
 }
 
 function clearGameTestOrigin(player: Player): void {
-    const minX = GAMETEST_ORIGIN.x - GAMETEST_CLEAR_RADIUS;
-    const minY = GAMETEST_ORIGIN.y;
-    const minZ = GAMETEST_ORIGIN.z - GAMETEST_CLEAR_RADIUS;
-    const maxX = GAMETEST_ORIGIN.x + GAMETEST_CLEAR_RADIUS;
-    const maxY = GAMETEST_ORIGIN.y + GAMETEST_CLEAR_HEIGHT;
-    const maxZ = GAMETEST_ORIGIN.z + GAMETEST_CLEAR_RADIUS;
-    player.runCommand(`fill ${minX} ${minY} ${minZ} ${maxX} ${maxY} ${maxZ} air replace`);
+    player.runCommand(
+        `fill ${GAMETEST_FLOOR_MIN.x} ${GAMETEST_ORIGIN.y} ${GAMETEST_FLOOR_MIN.z} ${GAMETEST_FLOOR_MAX.x} ${GAMETEST_ORIGIN.y + GAMETEST_CLEAR_HEIGHT} ${GAMETEST_FLOOR_MAX.z} air replace`,
+    );
 }
 
 function createGameTestFloor(player: Player): void {
-    const minX = GAMETEST_ORIGIN.x - GAMETEST_CLEAR_RADIUS;
-    const y = GAMETEST_ORIGIN.y - 1;
-    const minZ = GAMETEST_ORIGIN.z - GAMETEST_CLEAR_RADIUS;
-    const maxX = GAMETEST_ORIGIN.x + GAMETEST_CLEAR_RADIUS;
-    const maxZ = GAMETEST_ORIGIN.z + GAMETEST_CLEAR_RADIUS;
-    player.runCommand(`fill ${minX} ${y} ${minZ} ${maxX} ${y} ${maxZ} ${GAMETEST_FLOOR_BLOCK} replace`);
+    player.runCommand(
+        `fill ${GAMETEST_FLOOR_MIN.x} ${GAMETEST_FLOOR_MIN.y} ${GAMETEST_FLOOR_MIN.z} ${GAMETEST_FLOOR_MAX.x} ${GAMETEST_FLOOR_MAX.y} ${GAMETEST_FLOOR_MAX.z} ${GAMETEST_FLOOR_BLOCK} replace`,
+    );
 }
 
 function formatGameTestOrigin(): string {
