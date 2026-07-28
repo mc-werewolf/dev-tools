@@ -11,4 +11,4 @@ jobs:
     permissions:
       contents: write
     with:
-      artifact-name: werewolf-dev-simulated-player
+      artifact-name: werewolf-dev-tools
