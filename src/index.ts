@@ -450,10 +450,10 @@ function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGam
     try {
         clearGameTestOrigin(player);
         createGameTestFloor(player);
-        createGameTestMarker(player);
         player.runCommand(
             `execute positioned ${GAMETEST_ORIGIN.x} ${GAMETEST_ORIGIN.y} ${GAMETEST_ORIGIN.z} run gametest run WerewolfDevSim:${testName}`,
         );
+        createGameTestMarker(player);
         player.sendMessage(
             `[werewolf-dev-tools] Starting ${testName} at ${formatGameTestOrigin()} with ${configuredBotCount} simulated players.`,
         );
