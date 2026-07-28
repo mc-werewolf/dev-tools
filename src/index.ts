@@ -63,7 +63,9 @@ const GAMETEST_CLEAR_HEIGHT = 16;
 const GAMETEST_FLOOR_BLOCK = "minecraft:glass";
 const GAMETEST_MARKER_POSITION = { x: -6, y: 0, z: -21 } as const;
 const GAMETEST_MARKER_BLOCK = "minecraft:light_blue_stained_glass";
+const GAMETEST_MARKER_DELAY_TICKS = 10;
 const DISCONNECT_WAIT_MAX_TICKS = 100;
+const DISCONNECT_SETTLE_TICKS = 20;
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
 
@@ -71,6 +73,7 @@ let activeSession: ActiveSession | undefined;
 let configuredBotCount = DEFAULT_BOT_COUNT;
 let nextBotNumber = 1;
 let spawnRequestSerial = 0;
+const disconnectingPlayerNames = new Set<string>();
 let setupActionRegistered = false;
 
 router.init(properties);
@@ -258,7 +261,7 @@ async function openAddBotsForm(player: Player): Promise<void> {
 
 async function startSession(test: gameTest.Test, count: number): Promise<readonly SimulatedPlayer[]> {
     const requestSerial = ++spawnRequestSerial;
-    const disconnectedNames = collectActivePlayerNames();
+    const disconnectedNames = collectDisconnectTargetNames();
     disconnectAll();
     await waitForPlayersToDisconnect(disconnectedNames, requestSerial);
 
@@ -275,17 +278,29 @@ async function startSession(test: gameTest.Test, count: number): Promise<readonl
 
 async function waitForPlayersToDisconnect(names: readonly string[], requestSerial: number): Promise<void> {
     if (names.length === 0) return;
-    let remainingNames = [...names];
+    let remainingNames = [...new Set(names)];
     for (let tick = 0; tick < DISCONNECT_WAIT_MAX_TICKS; tick += 1) {
         if (requestSerial !== spawnRequestSerial) {
             throw new Error("A newer simulated player spawn request superseded this one.");
         }
-        const activeNames = new Set(world.getPlayers().map((player) => player.name));
-        remainingNames = names.filter((name) => activeNames.has(name));
-        if (remainingNames.length === 0) return;
+        remainingNames = collectWorldBotPlayerNames();
+        if (remainingNames.length === 0) {
+            clearDisconnectingNames(names);
+            await waitForDisconnectSettle(requestSerial);
+            return;
+        }
         await system.waitTicks(1);
     }
     throw new Error(`Timed out waiting for simulated players to disconnect: ${remainingNames.join(", ")}`);
+}
+
+async function waitForDisconnectSettle(requestSerial: number): Promise<void> {
+    for (let tick = 0; tick < DISCONNECT_SETTLE_TICKS; tick += 1) {
+        if (requestSerial !== spawnRequestSerial) {
+            throw new Error("A newer simulated player spawn request superseded this one.");
+        }
+        await system.waitTicks(1);
+    }
 }
 
 function addSimulatedPlayers(args?: { readonly count?: unknown }): SessionSummary | undefined {
@@ -329,6 +344,7 @@ function createBotName(): string {
     const usedNames = new Set([
         ...world.getPlayers().map((player) => player.name),
         ...(activeSession?.players.map((player) => player.name) ?? []),
+        ...disconnectingPlayerNames,
     ]);
     while (true) {
         const name = `${BOT_NAME_PREFIX}${nextBotNumber}`;
@@ -356,6 +372,7 @@ function disconnectAll(): number {
     const players = activeSession?.players ?? [];
     let disconnected = 0;
     for (const player of players) {
+        disconnectingPlayerNames.add(player.name);
         if (!player.isValid) continue;
         try {
             player.disconnect();
@@ -370,9 +387,31 @@ function disconnectAll(): number {
 }
 
 function collectActivePlayerNames(): string[] {
-    return (activeSession?.players ?? [])
-        .filter((player) => player.isValid)
-        .map((player) => player.name);
+    return (activeSession?.players ?? []).map((player) => player.name);
+}
+
+function collectDisconnectTargetNames(): string[] {
+    return [...new Set([
+        ...collectActivePlayerNames(),
+        ...collectWorldBotPlayerNames(),
+        ...disconnectingPlayerNames,
+    ])];
+}
+
+function collectWorldBotPlayerNames(): string[] {
+    return world.getPlayers()
+        .map((player) => player.name)
+        .filter(isDevBotName);
+}
+
+function clearDisconnectingNames(names: readonly string[]): void {
+    for (const name of names) {
+        disconnectingPlayerNames.delete(name);
+    }
+}
+
+function isDevBotName(name: string): boolean {
+    return new RegExp(`^${BOT_NAME_PREFIX}\\d+(?: \\(\\d+\\))?$`).test(name);
 }
 
 function movePlayer(args: MoveArgs): boolean {
@@ -453,7 +492,7 @@ function runGameTest(player: Player, testName: "spawnConfiguredBots" | "startGam
         player.runCommand(
             `execute positioned ${GAMETEST_ORIGIN.x} ${GAMETEST_ORIGIN.y} ${GAMETEST_ORIGIN.z} run gametest run WerewolfDevSim:${testName}`,
         );
-        createGameTestMarker(player);
+        scheduleGameTestMarker(player);
         player.sendMessage(
             `[werewolf-dev-tools] Starting ${testName} at ${formatGameTestOrigin()} with ${configuredBotCount} simulated players.`,
         );
@@ -478,6 +517,16 @@ function createGameTestMarker(player: Player): void {
     player.runCommand(
         `setblock ${GAMETEST_MARKER_POSITION.x} ${GAMETEST_MARKER_POSITION.y} ${GAMETEST_MARKER_POSITION.z} ${GAMETEST_MARKER_BLOCK}`,
     );
+}
+
+function scheduleGameTestMarker(player: Player): void {
+    system.runTimeout(() => {
+        try {
+            createGameTestMarker(player);
+        } catch (err) {
+            console.warn("[werewolf-dev-tools] Failed to place GameTest marker:", err);
+        }
+    }, GAMETEST_MARKER_DELAY_TICKS);
 }
 
 function formatGameTestOrigin(): string {
