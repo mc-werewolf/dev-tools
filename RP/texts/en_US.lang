@@ -1,2 +1,4 @@
 werewolf-dev-tools.name=Werewolf Dev Tools
 werewolf-dev-tools.description=Provides development-only tools for Werewolf BDS testing.
+werewolf-dev-tools.setup.simulatedPlayers.label=Dev Tools
+werewolf-dev-tools.setup.simulatedPlayers.description=Manage simulated players for BDS testing.
