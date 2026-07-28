@@ -311,7 +311,7 @@ async function waitForPlayerIdsToBeVisible(playerIds: readonly string[], request
         if (requestSerial !== spawnRequestSerial) {
             throw new Error("A newer simulated player spawn request superseded this one.");
         }
-        const visibleIds = new Set(world.getPlayers().map((player) => player.id));
+        const visibleIds = new Set(world.getPlayers().flatMap((player) => [getStartPlayerId(player), player.name]));
         missingIds = playerIds.filter((playerId) => !visibleIds.has(playerId));
         if (missingIds.length === 0) return;
         await system.waitTicks(1);
@@ -370,12 +370,22 @@ function createBotName(): string {
 }
 
 function collectVisibleStartPlayerIds(players: readonly (Player | SimulatedPlayer | undefined)[]): string[] {
-    return players.map((player) => {
-        if (!player || typeof player.id !== "string" || player.id.length === 0) {
-            throw new Error("A simulated player was not spawned correctly.");
-        }
-        return player.id;
-    });
+    return players.map(getStartPlayerId);
+}
+
+function getStartPlayerId(player: Player | SimulatedPlayer | undefined): string {
+    if (!player) {
+        throw new Error("A simulated player was not spawned correctly.");
+    }
+    const id = (player as { readonly id?: unknown }).id;
+    if (typeof id === "string" && id.trim().length > 0) {
+        return id;
+    }
+    const name = (player as { readonly name?: unknown }).name;
+    if (typeof name === "string" && name.trim().length > 0) {
+        return name;
+    }
+    throw new Error("A simulated player was not spawned correctly.");
 }
 
 function listSession(): SessionSummary | undefined {
