@@ -61,12 +61,14 @@ const GAMETEST_FLOOR_MIN = { x: -8, y: -1, z: -24 } as const;
 const GAMETEST_FLOOR_MAX = { x: 8, y: -1, z: 24 } as const;
 const GAMETEST_CLEAR_HEIGHT = 16;
 const GAMETEST_FLOOR_BLOCK = "minecraft:glass";
+const DISCONNECT_WAIT_MAX_TICKS = 100;
 const REGISTER_SETUP_ACTION_RETRY_TICKS = 20;
 const REGISTER_SETUP_ACTION_MAX_ATTEMPTS = 20;
 
 let activeSession: ActiveSession | undefined;
 let configuredBotCount = DEFAULT_BOT_COUNT;
 let nextBotNumber = 1;
+let spawnRequestSerial = 0;
 let setupActionRegistered = false;
 
 router.init(properties);
@@ -87,39 +89,51 @@ router.afterEvents.addonActivate.subscribe(() => {
 
 gameTest
     .registerAsync("WerewolfDevSim", "spawnLobbyBots", async (test) => {
-        const players = startSession(test, DEFAULT_BOT_COUNT);
-        broadcast(
-            `Spawned ${players.length} simulated players. Start the game from GameManager while this GameTest is running.`,
-        );
-        test.succeedOnTick(SESSION_TICKS);
+        try {
+            const players = await startSession(test, DEFAULT_BOT_COUNT);
+            broadcast(
+                `Spawned ${players.length} simulated players. Start the game from GameManager while this GameTest is running.`,
+            );
+            test.succeedOnTick(SESSION_TICKS);
+        } catch (err) {
+            test.fail(err instanceof Error ? err.message : String(err));
+        }
     })
     .maxTicks(SESSION_TICKS + 20)
     .structureName("gametests:mediumglass");
 
 gameTest
     .registerAsync("WerewolfDevSim", "spawnConfiguredBots", async (test) => {
-        const players = startSession(test, configuredBotCount);
-        broadcast(
-            `Spawned ${players.length} simulated players. Start the game from GameManager while this GameTest is running.`,
-        );
-        test.succeedOnTick(SESSION_TICKS);
+        try {
+            const players = await startSession(test, configuredBotCount);
+            broadcast(
+                `Spawned ${players.length} simulated players. Start the game from GameManager while this GameTest is running.`,
+            );
+            test.succeedOnTick(SESSION_TICKS);
+        } catch (err) {
+            test.fail(err instanceof Error ? err.message : String(err));
+        }
     })
     .maxTicks(SESSION_TICKS + 20)
     .structureName("gametests:mediumglass");
 
 gameTest
     .registerAsync("WerewolfDevSim", "startGameWithBots", async (test) => {
-        const players = startSession(test, configuredBotCount);
+        try {
+            const players = await startSession(test, configuredBotCount);
 
-        const playerIds = [...getHumanPlayers(), ...players].map((player) => player.id);
-        const result = await tryGameManagerRequest<GameStateLike>("werewolf:devStartGame", { playerIds });
-        if (!result || isCanceledResult(result) || result.status !== "running") {
-            broadcast("GameManager dev APIs were unavailable. Bots are spawned; start the game manually.");
-        } else {
-            broadcast(`Started Werewolf game with ${Object.keys(result.players ?? {}).length} players.`);
+            const playerIds = [...getHumanPlayers(), ...players].map((player) => player.id);
+            const result = await tryGameManagerRequest<GameStateLike>("werewolf:devStartGame", { playerIds });
+            if (!result || isCanceledResult(result) || result.status !== "running") {
+                broadcast("GameManager dev APIs were unavailable. Bots are spawned; start the game manually.");
+            } else {
+                broadcast(`Started Werewolf game with ${Object.keys(result.players ?? {}).length} players.`);
+            }
+
+            test.succeedOnTick(SESSION_TICKS);
+        } catch (err) {
+            test.fail(err instanceof Error ? err.message : String(err));
         }
-
-        test.succeedOnTick(SESSION_TICKS);
     })
     .maxTicks(SESSION_TICKS + 20)
     .structureName("gametests:mediumglass");
@@ -240,8 +254,11 @@ async function openAddBotsForm(player: Player): Promise<void> {
     }
 }
 
-function startSession(test: gameTest.Test, count: number): readonly SimulatedPlayer[] {
+async function startSession(test: gameTest.Test, count: number): Promise<readonly SimulatedPlayer[]> {
+    const requestSerial = ++spawnRequestSerial;
+    const disconnectedNames = collectActivePlayerNames();
     disconnectAll();
+    await waitForPlayersToDisconnect(disconnectedNames, requestSerial);
 
     const players = spawnPlayers(test, count, 0);
     activeSession = {
@@ -252,6 +269,21 @@ function startSession(test: gameTest.Test, count: number): readonly SimulatedPla
     };
 
     return players;
+}
+
+async function waitForPlayersToDisconnect(names: readonly string[], requestSerial: number): Promise<void> {
+    if (names.length === 0) return;
+    let remainingNames = [...names];
+    for (let tick = 0; tick < DISCONNECT_WAIT_MAX_TICKS; tick += 1) {
+        if (requestSerial !== spawnRequestSerial) {
+            throw new Error("A newer simulated player spawn request superseded this one.");
+        }
+        const activeNames = new Set(world.getPlayers().map((player) => player.name));
+        remainingNames = names.filter((name) => activeNames.has(name));
+        if (remainingNames.length === 0) return;
+        await system.waitTicks(1);
+    }
+    throw new Error(`Timed out waiting for simulated players to disconnect: ${remainingNames.join(", ")}`);
 }
 
 function addSimulatedPlayers(args?: { readonly count?: unknown }): SessionSummary | undefined {
@@ -333,6 +365,12 @@ function disconnectAll(): number {
     activeSession = undefined;
     nextBotNumber = 1;
     return disconnected;
+}
+
+function collectActivePlayerNames(): string[] {
+    return (activeSession?.players ?? [])
+        .filter((player) => player.isValid)
+        .map((player) => player.name);
 }
 
 function movePlayer(args: MoveArgs): boolean {
