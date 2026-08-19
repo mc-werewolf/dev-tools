@@ -8,9 +8,9 @@ importers:
 
   .:
     devDependencies:
-      '@kairo-js/build-tools':
-        specifier: 1.0.0-beta.4
-        version: 1.0.0-beta.4(@kairo-js/properties@1.2.1)
+      '@kairo-js/cli':
+        specifier: 0.1.0-beta
+        version: 0.1.0-beta(@kairo-js/properties@1.2.1)
       '@kairo-js/properties':
         specifier: 1.2.1
         version: 1.2.1
@@ -206,8 +206,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@kairo-js/build-tools@1.0.0-beta.4':
-    resolution: {integrity: sha512-0zmAD8M6RjS+Bts3YQ5U5g74OwqsEK3gJkK19vPRmeDs16tTz8FdU3GZFGBnedZnW/6VuNenQgNQByWEwDT3ig==}
+  '@kairo-js/cli@0.1.0-beta':
+    resolution: {integrity: sha512-rMioorwPUA5Z6PnNrg487WYl0ixGPIlKcVpW3wjO8UOcIXe8J0LB8d3+LTPnmE/WMeeE6aLsulONGvwhH3BdDg==}
+    engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
       '@kairo-js/properties': ^1.2.1
@@ -398,7 +399,7 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@kairo-js/build-tools@1.0.0-beta.4(@kairo-js/properties@1.2.1)':
+  '@kairo-js/cli@0.1.0-beta(@kairo-js/properties@1.2.1)':
     dependencies:
       '@kairo-js/properties': 1.2.1
       esbuild: 0.27.7
