@@ -15,20 +15,20 @@ importers:
         specifier: 1.2.1
         version: 1.2.1
       '@kairo-js/router':
-        specifier: 1.0.0-beta.2
-        version: 1.0.0-beta.2(@minecraft/server-ui@2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)))(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))
+        specifier: 1.0.0-beta.5
+        version: 1.0.0-beta.5(@minecraft/server-ui@2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)))(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))
       '@minecraft/common':
         specifier: ^1.2.0
         version: 1.3.0
       '@minecraft/server':
-        specifier: ^2.8.0
-        version: 2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)
+        specifier: ^2.9.0
+        version: 2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)
       '@minecraft/server-gametest':
         specifier: 1.0.0-beta.1.21.60-preview.24
         version: 1.0.0-beta.1.21.60-preview.24(@minecraft/vanilla-data@1.26.33)
       '@minecraft/server-ui':
         specifier: ^2.0.0
-        version: 2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))
+        version: 2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))
       '@types/node':
         specifier: ^24.12.0
         version: 24.13.3
@@ -206,9 +206,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fastify/merge-json-schemas@0.2.1':
-    resolution: {integrity: sha512-OA3KGBCy6KtIvLf8DINC5880o5iBlDX4SxzLQS8HorJAbqluzLRn80UXU0bxZn7UOFhFgpRJDasfwn9nG4FG4A==}
-
   '@kairo-js/build-tools@1.0.0-beta.4':
     resolution: {integrity: sha512-0zmAD8M6RjS+Bts3YQ5U5g74OwqsEK3gJkK19vPRmeDs16tTz8FdU3GZFGBnedZnW/6VuNenQgNQByWEwDT3ig==}
     hasBin: true
@@ -218,14 +215,11 @@ packages:
   '@kairo-js/properties@1.2.1':
     resolution: {integrity: sha512-/jdu+th3fY+l1TB9vRi/xr/Zx8E5zlQiJRW4S/KPD1fv+kckDt0PJavFtFsXAr3EGSwHitzDOIz+0Oyjy//pow==}
 
-  '@kairo-js/router@1.0.0-beta.2':
-    resolution: {integrity: sha512-LjdUSGZ9YJwYcPfgVtvF5hxIKlY9BcRZ6a3OaPw+esaRnKf9fYmS0+YFoIaqlkBdtCTFqm5pUxaPxZd8XEJmvw==}
+  '@kairo-js/router@1.0.0-beta.5':
+    resolution: {integrity: sha512-O5kGSl0w7l2LSqyFci9+dS8hMbWRwrDKP+K+j24lFGWtEO/2ZQ9CkJv63MWwbCi9zsAIjiYreKR5Prd1VtWK6A==}
     peerDependencies:
-      '@minecraft/server': ^2.8.0
+      '@minecraft/server': ^2.9.0
       '@minecraft/server-ui': ^2.0.0
-
-  '@kairo-js/utils@1.2.1':
-    resolution: {integrity: sha512-L5lksOPDRhNiwl3qwNzF0HpGI1FcVciBXl/eCWbcYaP6q8PHtFWfDse1o87Y7QzT9BR93open11R3zLxBi6zUw==}
 
   '@minecraft/common@1.3.0':
     resolution: {integrity: sha512-GLT8USFhvEyeTTFHZAgszbrnoT007hmXmK+aO4l+2A1up9/zwZ+4e8R8F0KcKrCWDjLEqkOJtPow0hQCcNJ++Q==}
@@ -244,8 +238,8 @@ packages:
     peerDependencies:
       '@minecraft/vanilla-data': '>=1.20.70'
 
-  '@minecraft/server@2.8.0':
-    resolution: {integrity: sha512-5VPlToP3IihUWrLHQJdNPSq++vPYnB+IZUVdO6kJ/VWVE29pN230f9SiCD28XU+Ujfh/EdjU3anktXG77pjWLA==}
+  '@minecraft/server@2.9.0':
+    resolution: {integrity: sha512-tzPwJbcXs4H3daAy5v0KldOMUwgSr4cc5x6TpEvsr3Jto9XtvsBcNUVLVdni5NEZCizQ0mzBwnLCXgxyYpR91A==}
     peerDependencies:
       '@minecraft/common': ^1.2.0
       '@minecraft/vanilla-data': '>=1.20.70'
@@ -253,25 +247,8 @@ packages:
   '@minecraft/vanilla-data@1.26.33':
     resolution: {integrity: sha512-lYJCYHg12BRTQULjvo00eKVWzj7Und7WEBCUORTRfESylITVaiqJ0jPpVEKsmTu68gKKelGxk4ua8BU/1R/X0A==}
 
-  '@sinclair/typebox@0.34.52':
-    resolution: {integrity: sha512-XiMQh7qqVlxZzcVD+kkGMNGMzcTrDMLWI7S4x7z1MkCkbDPrekpZXEUK0eZqZFMuHQg2a2DZOcDIh9o5v3Gonw==}
-
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
-
-  '@types/semver@7.7.1':
-    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
-
-  ajv-formats@3.0.1:
-    resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
-    peerDependencies:
-      ajv: ^8.0.0
-    peerDependenciesMeta:
-      ajv:
-        optional: true
-
-  ajv@8.20.0:
-    resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
@@ -281,23 +258,10 @@ packages:
     resolution: {integrity: sha512-JZyDyq3D4AUifKTPOB7DELf6XsB3WdPuNxCtob1vFXPsSXhdAiHBWJ/tJ8HAc9aH84BK+5JFZLNkJKx3G9kzQg==}
     engines: {node: 20 || >=22}
 
-  dequal@2.0.3:
-    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
-    engines: {node: '>=6'}
-
   esbuild@0.27.7:
     resolution: {integrity: sha512-IxpibTjyVnmrIQo5aqNpCgoACA/dTKLTlhMHihVHhdkxKyPO1uBBthumT0rdHmcsk9uMonIWS0m4FljWzILh3w==}
     engines: {node: '>=18'}
     hasBin: true
-
-  fast-deep-equal@3.1.3:
-    resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
-
-  fast-json-stringify@6.4.0:
-    resolution: {integrity: sha512-ibRCQ0GZKJIQ+P3Et1h0LhPgp3PMTYk0MH8O+kW3lNYsvmaQww5Nn3f1jf73Q0jR1Yz3a1CDP4/NZD3vOajWJQ==}
-
-  fast-uri@3.1.4:
-    resolution: {integrity: sha512-8JnbkQ4juDyvYs4mgFGQqg4yCYtFDtUtmp2QIQq11ZZe5CFQ5wcqm1rqDgAh/QdMySuBnPzMUiJUNZG5N/AiQw==}
 
   fs-extra@11.4.0:
     resolution: {integrity: sha512-EQsFzMUJkCKGr1ePqlYADkIUmHW1s3ZXr5Yqy6wbGrfUCphpl2maM/kyOIRA2HpP3AaFQTZXD4ldjek+nccddA==}
@@ -309,12 +273,6 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
-
-  json-schema-ref-resolver@3.0.0:
-    resolution: {integrity: sha512-hOrZIVL5jyYFjzk7+y7n5JDzGlU8rfWDuYyHwGa2WA8/pcmMHezp2xsVwxrebD/Q9t8Nc5DboieySDpCp4WG4A==}
-
-  json-schema-traverse@1.0.0:
-    resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
 
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
@@ -343,24 +301,9 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  require-from-string@2.0.2:
-    resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
-    engines: {node: '>=0.10.0'}
-
-  rfdc@1.4.1:
-    resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
-
   rimraf@6.1.3:
     resolution: {integrity: sha512-LKg+Cr2ZF61fkcaK1UdkH2yEBBKnYjTyWzTJT6KNPcSPaiT7HSdhtMXQuN5wkTX0Xu72KQ1l8S42rlmexS2hSA==}
     engines: {node: 20 || >=22}
-    hasBin: true
-
-  seedrandom@3.0.5:
-    resolution: {integrity: sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==}
-
-  semver@7.8.5:
-    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
-    engines: {node: '>=10'}
     hasBin: true
 
   typescript@5.9.3:
@@ -455,10 +398,6 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@fastify/merge-json-schemas@0.2.1':
-    dependencies:
-      dequal: 2.0.3
-
   '@kairo-js/build-tools@1.0.0-beta.4(@kairo-js/properties@1.2.1)':
     dependencies:
       '@kairo-js/properties': 1.2.1
@@ -467,23 +406,11 @@ snapshots:
 
   '@kairo-js/properties@1.2.1': {}
 
-  '@kairo-js/router@1.0.0-beta.2(@minecraft/server-ui@2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)))(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))':
+  '@kairo-js/router@1.0.0-beta.5(@minecraft/server-ui@2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)))(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))':
     dependencies:
       '@kairo-js/properties': 1.2.1
-      '@kairo-js/utils': 1.2.1
-      '@minecraft/server': 2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)
-      '@minecraft/server-ui': 2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))
-      '@sinclair/typebox': 0.34.52
-      fast-json-stringify: 6.4.0
-      seedrandom: 3.0.5
-
-  '@kairo-js/utils@1.2.1':
-    dependencies:
-      '@kairo-js/properties': 1.2.1
-      '@sinclair/typebox': 0.34.52
-      '@types/semver': 7.7.1
-      seedrandom: 3.0.5
-      semver: 7.8.5
+      '@minecraft/server': 2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)
+      '@minecraft/server-ui': 2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))
 
   '@minecraft/common@1.3.0': {}
 
@@ -494,49 +421,32 @@ snapshots:
     transitivePeerDependencies:
       - '@minecraft/vanilla-data'
 
-  '@minecraft/server-ui@2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))':
+  '@minecraft/server-ui@2.1.0(@minecraft/common@1.3.0)(@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33))':
     dependencies:
       '@minecraft/common': 1.3.0
-      '@minecraft/server': 2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)
+      '@minecraft/server': 2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)
 
   '@minecraft/server@1.19.0(@minecraft/vanilla-data@1.26.33)':
     dependencies:
       '@minecraft/common': 1.3.0
       '@minecraft/vanilla-data': 1.26.33
 
-  '@minecraft/server@2.8.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)':
+  '@minecraft/server@2.9.0(@minecraft/common@1.3.0)(@minecraft/vanilla-data@1.26.33)':
     dependencies:
       '@minecraft/common': 1.3.0
       '@minecraft/vanilla-data': 1.26.33
 
   '@minecraft/vanilla-data@1.26.33': {}
 
-  '@sinclair/typebox@0.34.52': {}
-
   '@types/node@24.13.3':
     dependencies:
       undici-types: 7.18.2
-
-  '@types/semver@7.7.1': {}
-
-  ajv-formats@3.0.1(ajv@8.20.0):
-    optionalDependencies:
-      ajv: 8.20.0
-
-  ajv@8.20.0:
-    dependencies:
-      fast-deep-equal: 3.1.3
-      fast-uri: 3.1.4
-      json-schema-traverse: 1.0.0
-      require-from-string: 2.0.2
 
   balanced-match@4.0.4: {}
 
   brace-expansion@5.0.8:
     dependencies:
       balanced-match: 4.0.4
-
-  dequal@2.0.3: {}
 
   esbuild@0.27.7:
     optionalDependencies:
@@ -567,19 +477,6 @@ snapshots:
       '@esbuild/win32-ia32': 0.27.7
       '@esbuild/win32-x64': 0.27.7
 
-  fast-deep-equal@3.1.3: {}
-
-  fast-json-stringify@6.4.0:
-    dependencies:
-      '@fastify/merge-json-schemas': 0.2.1
-      ajv: 8.20.0
-      ajv-formats: 3.0.1(ajv@8.20.0)
-      fast-uri: 3.1.4
-      json-schema-ref-resolver: 3.0.0
-      rfdc: 1.4.1
-
-  fast-uri@3.1.4: {}
-
   fs-extra@11.4.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -593,12 +490,6 @@ snapshots:
       path-scurry: 2.0.2
 
   graceful-fs@4.2.11: {}
-
-  json-schema-ref-resolver@3.0.0:
-    dependencies:
-      dequal: 2.0.3
-
-  json-schema-traverse@1.0.0: {}
 
   jsonfile@6.2.1:
     dependencies:
@@ -623,18 +514,10 @@ snapshots:
 
   prettier@3.6.2: {}
 
-  require-from-string@2.0.2: {}
-
-  rfdc@1.4.1: {}
-
   rimraf@6.1.3:
     dependencies:
       glob: 13.0.6
       package-json-from-dist: 1.0.1
-
-  seedrandom@3.0.5: {}
-
-  semver@7.8.5: {}
 
   typescript@5.9.3: {}
 
