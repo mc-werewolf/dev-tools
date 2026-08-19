@@ -31,7 +31,7 @@
     "author": "shizuku86",
     "license": "ISC",
     "devDependencies": {
-        "@kairo-js/cli": "0.1.0-beta",
+        "@kairo-js/cli": "0.1.1-beta",
         "@kairo-js/properties": "1.2.1",
         "@kairo-js/router": "1.0.0-beta.6",
         "@minecraft/common": "^1.2.0",
