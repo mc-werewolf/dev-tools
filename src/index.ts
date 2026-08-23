@@ -10,6 +10,8 @@ type SimulatedPlayerSummary = {
     readonly id: string;
     readonly name: string;
     readonly location: Vector3;
+    readonly isValid: boolean;
+    readonly health: number | undefined;
 };
 
 type SessionSummary = {
@@ -22,7 +24,13 @@ type ActiveSession = {
     readonly id: string;
     readonly test: gameTest.Test;
     readonly startedAtTick: number;
-    players: SimulatedPlayer[];
+    players: ActiveSimulatedPlayer[];
+};
+
+type ActiveSimulatedPlayer = {
+    readonly id: string;
+    readonly name: string;
+    readonly player: SimulatedPlayer;
 };
 
 type BotSpec = {
@@ -232,7 +240,7 @@ async function openAddBotsForm(player: Player): Promise<void> {
         player.sendMessage("[werewolf-dev-tools] No active GameTest session. Spawn a new session first.");
         return;
     }
-    activeSession.players = activeSession.players.filter((sessionPlayer) => sessionPlayer.isValid);
+    activeSession.players = activeSession.players.filter((sessionPlayer) => isPlayerValid(sessionPlayer.player));
     const remainingCount = MAX_BOT_COUNT - activeSession.players.length;
     if (remainingCount <= 0) {
         player.sendMessage(`[werewolf-dev-tools] Maximum simulated player count is ${MAX_BOT_COUNT}.`);
@@ -272,7 +280,7 @@ async function startSession(test: gameTest.Test, count: number): Promise<readonl
         id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
         test,
         startedAtTick: system.currentTick,
-        players,
+        players: players.map(toActiveSimulatedPlayer),
     };
 
     return players;
@@ -323,7 +331,7 @@ function addSimulatedPlayers(args?: { readonly count?: unknown }): SessionSummar
     if (!activeSession) {
         throw new Error("No active GameTest session. Spawn a new session first.");
     }
-    activeSession.players = activeSession.players.filter((player) => player.isValid);
+    activeSession.players = activeSession.players.filter((player) => isPlayerValid(player.player));
     const remainingCount = MAX_BOT_COUNT - activeSession.players.length;
     if (remainingCount <= 0) {
         throw new Error(`Maximum simulated player count is ${MAX_BOT_COUNT}.`);
@@ -333,7 +341,7 @@ function addSimulatedPlayers(args?: { readonly count?: unknown }): SessionSummar
         Math.min(readCount(args?.count, 1), remainingCount),
         activeSession.players.length,
     );
-    activeSession.players.push(...players);
+    activeSession.players.push(...players.map(toActiveSimulatedPlayer));
     return listSession();
 }
 
@@ -390,17 +398,54 @@ function getStartPlayerId(player: Player | SimulatedPlayer | undefined): string 
 
 function listSession(): SessionSummary | undefined {
     if (!activeSession) return undefined;
-    activeSession.players = activeSession.players.filter((player) => player.isValid);
 
     return {
         id: activeSession.id,
         startedAtTick: activeSession.startedAtTick,
-        players: activeSession.players.map((player) => ({
-            id: player.id,
-            name: player.name,
-            location: player.location,
+        players: activeSession.players.map((record) => ({
+            id: record.id,
+            name: record.name,
+            location: getLocation(record.player),
+            isValid: isPlayerValid(record.player),
+            health: getHealth(record.player),
         })),
     };
+}
+
+function toActiveSimulatedPlayer(player: SimulatedPlayer): ActiveSimulatedPlayer {
+    return {
+        id: getStartPlayerId(player),
+        name: player.name,
+        player,
+    };
+}
+
+function isPlayerValid(player: SimulatedPlayer): boolean {
+    try {
+        const value = (player as { readonly isValid?: unknown }).isValid;
+        if (typeof value === "function") return value.call(player) === true;
+        if (typeof value === "boolean") return value;
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function getHealth(player: SimulatedPlayer): number | undefined {
+    try {
+        const health = player.getComponent("minecraft:health") as { readonly currentValue?: unknown } | undefined;
+        return typeof health?.currentValue === "number" ? health.currentValue : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+function getLocation(player: SimulatedPlayer): Vector3 {
+    try {
+        return player.location;
+    } catch {
+        return { x: 0, y: 0, z: 0 };
+    }
 }
 
 function disconnectAll(): number {
@@ -408,9 +453,9 @@ function disconnectAll(): number {
     let disconnected = 0;
     for (const player of players) {
         disconnectingPlayerNames.add(player.name);
-        if (!player.isValid) continue;
+        if (!isPlayerValid(player.player)) continue;
         try {
-            player.disconnect();
+            player.player.disconnect();
             disconnected += 1;
         } catch (err) {
             console.warn("[werewolf-dev-tools] Failed to disconnect simulated player:", err);
@@ -475,7 +520,7 @@ function chatAsPlayer(args: ChatArgs): boolean {
 function findActivePlayer(name: string): SimulatedPlayer | undefined {
     const session = listSession();
     if (!session || !activeSession) return undefined;
-    return activeSession.players.find((player) => player.name === name);
+    return activeSession.players.find((player) => player.name === name)?.player;
 }
 
 function getHumanPlayers(): Player[] {
